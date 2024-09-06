@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ news.title }} - Blog Detail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+     
+    <div>
+        <img src="{{ news.image.url }}" alt="{{ news.name }}" width="200">
+    </div>
+    <h2>{{ news_item.title }}</h2>
+    <p>{{ news_item.description }}</p>
+    {% comment %} <a href="{% url 'edit_news' news.pk %}">Edit</a>
+    <a href="{% url 'delete_news' news.pk %}">Delete</a>  {% endcomment %}
+
+    <h3>Likes: {{ total_likes }}</h3>
+    <form method="post" action="{% url 'toggle_like' news_item.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="like-button {% if user_has_liked %}liked{% else %}unliked{% endif %}">
+            {% if user_has_liked %}
+                Unlike
+            {% else %}
+                Like
+            {% endif %}
+        </button>
+    </form>
+    
+    <h3>Users who liked this news:</h3>
+    <ul>
+        {% if liked_users %}
+            {% for user in liked_users %}
+                <li>{{ user }}</li>
+            {% endfor %}
+        {% else %}
+            <li>No likes yet.</li>
+        {% endif %}
+    </ul>
+    
+
+    <h3>Comments: {{ total_comments }}</h3>
+    <ul>
+        {% for comment in comments %}
+        <li><strong>{{ comment.user.username }}</strong>: {{ comment.content }} <em>({{ comment.created_at }})</em></li>
+        {% empty %}
+        <li>No comments yet. Be the first to comment!</li>
+        {% endfor %}
+    </ul>
+    
+    <h3>Add a Comment here:</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit">Post Comment</button>
+    </form>
+    <br>
+    <div class="action-buttons">
+        <a href="{% url 'edit_news' news_item.pk %}" class="btn btn-sm btn-primary">Edit</a>
+        <a href="{% url 'delete_news' news_item.pk %}" class="btn btn-sm btn-danger" >Delete</a>
+    </div>
+    <br>
+    <a href="{% url 'news_list' %}" class="btn btn-sm btn-outline-primary">Back to Blogs Home Page</a>
+    <br><br><br>
+</body>
+</html>
